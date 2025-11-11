@@ -1,6 +1,61 @@
 import os
 import sys
+import subprocess
 from datetime import datetime
+
+def connect_to_shared_folder(shared_folder_path, username, password):
+    """Menghubungkan ke shared folder dengan authentikasi"""
+    try:
+        # Ekstrak server name dari path (contoh: \\10.10.0.113\bahan berita)
+        parts = shared_folder_path.split('\\')
+        server = parts[2]
+        share = parts[3]
+        
+        # Format: \\server\share
+        network_path = f"\\\\{server}\\{share}"
+        
+        print(f"Mencoba menghubungkan ke: {network_path}")
+        
+        # Command untuk Windows: net use
+        cmd = f'net use "{network_path}" "{password}" /user:{username} /persistent:yes'
+        
+        # Jalankan command
+        result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+        
+        if result.returncode == 0:
+            print(f"✓ Berhasil terhubung ke shared folder")
+            return True
+        else:
+            print(f"❌ Gagal terhubung: {result.stderr}")
+            return False
+            
+    except Exception as e:
+        print(f"❌ Error koneksi: {e}")
+        return False
+
+
+def disconnect_shared_folder(shared_folder_path):
+    """Memutuskan koneksi dari shared folder"""
+    try:
+        parts = shared_folder_path.split('\\')
+        server = parts[2]
+        share = parts[3]
+        network_path = f"\\\\{server}\\{share}"
+        
+        cmd = f'net use "{network_path}" /delete /yes'
+        result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+        
+        if result.returncode == 0:
+            print(f"✓ Berhasil memutuskan koneksi")
+            return True
+        else:
+            print(f"❌ Gagal memutuskan koneksi: {result.stderr}")
+            return False
+            
+    except Exception as e:
+        print(f"❌ Error: {e}")
+        return False
+
 
 def clear_output_folder(folder_path):
     """Menghapus semua file dalam folder output"""
@@ -92,6 +147,10 @@ if __name__ == "__main__":
     shared_folder = f"\\\\10.10.0.113\\bahan berita\\2025\\RUNNING TEXT\\RUNNING TEXT HEADLINE BERITA\\{bulan_sekarang}"
     result_folder = r"C:\CPNS\RUNNING TEXT TERBARU NOVEMBER 2025"
     file_name = f"{tanggal_sekarang}.txt"
+    
+    # Username dan Password untuk shared folder
+    username = "admin"              # Ganti dengan username yang Anda ketahui
+    password = "password_anda"      # Ganti dengan password shared folder
   
     print("Memproses file...")
     print("=" * 50)
@@ -99,7 +158,14 @@ if __name__ == "__main__":
     print(f"Result Folder: {result_folder}")
     print(f"File Name: {file_name}")
     print("=" * 50)
-     
+    
+    # Hubungkan ke shared folder terlebih dahulu
+    print("\n🔐 Menghubungkan ke shared folder...")
+    if not connect_to_shared_folder(shared_folder, username, password):
+        print("Gagal menghubungkan ke shared folder. Program dihentikan.")
+        sys.exit(1)
+    
+    print()
     results = read_split_and_export(
         shared_folder_path=shared_folder,
         result_folder_path=result_folder,
@@ -112,3 +178,6 @@ if __name__ == "__main__":
         print(f"File hasil disimpan di: {result_folder}")
     else:
         print("\n😞 Gagal memproses file.")
+    
+    # Opsional: Putuskan koneksi setelah selesai
+    # disconnect_shared_folder(shared_folder)
