@@ -27,7 +27,7 @@ Program Python untuk membaca file teks dari shared folder, memisahkan konten ber
 ### Requirements
 - Python 3.7 atau lebih tinggi
 - Akses ke shared folder dengan username dan password
-- Koneksi jaringan ke server (contoh: `\\10.10.0.113`)
+- Koneksi jaringan ke server (contoh: `\\192.168.0.113`)
 
 ### Instalasi
 ```bash
@@ -59,7 +59,7 @@ username = "your_username"          # Ganti dengan username Anda
 password = "your_password"          # Ganti dengan password Anda
 
 # Path shared folder
-shared_folder = f"\\\\10.10.0.113\\bahan berita\\2025\\RUNNING TEXT\\..."
+shared_folder = f"\\\\192.168.0.113\\bahan berita\\2025\\RUNNING TEXT\\..."
 
 # Folder untuk hasil output
 result_folder = r"C:\CPNS\RUNNING TEXT TERBARU NOVEMBER 2025"
@@ -104,7 +104,7 @@ Berita Pertama@_@Berita Kedua@_@Berita Ketiga
 Menghubungkan PC ke shared folder menggunakan kredensial yang diberikan.
 
 ```python
-connect_to_shared_folder("\\\\10.10.0.113\\bahan berita", "user", "pass")
+connect_to_shared_folder("\\\\192.168.0.113\\bahan berita", "user", "pass")
 ```
 
 ### `disconnect_shared_folder(shared_folder_path)`
